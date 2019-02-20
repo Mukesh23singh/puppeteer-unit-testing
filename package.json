@@ -1,0 +1,30 @@
+{
+  "name": "puppeteer-unit-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "NODE_ENV=testing mocha -r ts-node/register *.spec.ts --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mukesh23singh/puppeteer-unit-testing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mukesh23singh/puppeteer-unit-testing/issues"
+  },
+  "homepage": "https://github.com/Mukesh23singh/puppeteer-unit-testing#readme",
+  "dependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.9.4",
+    "chai": "4.1.2",
+    "mocha": "4.1.0",
+    "puppeteer": "^1.12.2",
+    "sinon": "4.2.2",
+    "ts-node-register": "^1.0.0",
+    "typescript": "^3.3.3"
+  }
+}

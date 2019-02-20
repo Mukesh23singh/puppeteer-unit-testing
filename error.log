@@ -1,0 +1,24 @@
+  MonitorRequestHelper
+    ✓ monitorRequests should not called
+    1) monitorRequests should abort the request
+    2) monitorRequests should continue the request
+
+
+  1 passing (28ms)
+  2 failing
+
+  1) MonitorRequestHelper
+       monitorRequests should abort the request:
+     AssertError: expected spy to be called once but was called 0 times
+      at Object.fail (node_modules/sinon/lib/sinon/assert.js:96:21)
+      at failAssertion (node_modules/sinon/lib/sinon/assert.js:55:16)
+      at Object.assert.(anonymous function) [as calledOnce] (node_modules/sinon/lib/sinon/assert.js:80:13)
+      at Context.<anonymous> (monitorRequest.helper.spec.ts:58:18)
+
+  2) MonitorRequestHelper
+       monitorRequests should continue the request:
+     AssertError: expected spy to be called once but was called 0 times
+      at Object.fail (node_modules/sinon/lib/sinon/assert.js:96:21)
+      at failAssertion (node_modules/sinon/lib/sinon/assert.js:55:16)
+      at Object.assert.(anonymous function) [as calledOnce] (node_modules/sinon/lib/sinon/assert.js:80:13)
+      at Context.<anonymous> (monitorRequest.helper.spec.ts:74:18)
