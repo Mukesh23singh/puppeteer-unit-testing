@@ -1,7 +1,5 @@
 import * as sinon from 'sinon';
-// import { expect } from 'chai';
-// require('chai').use(require('sinon-chai'));
-import 'mocha';
+import { expect } from 'chai';
 const proc = require('child_process');
 
 import { MonitorRequestHelper } from './monitorRequest.helper';
@@ -28,49 +26,68 @@ describe('MonitorRequestHelper', () => {
           return 'image';
         },
         abort: function () {
-          return sinon.spy();
+          console.log('abort Called');
         },
         continue: function () {
-          return sinon.spy();
+          console.log('abort Called');
         }
       };
     };
     page.on('request', request);
+    let spyAbort = sinon.spy(request(), 'abort');
     MonitorRequestHelper.monitorRequests(page);
-    sinon.assert.notCalled(request().abort());
+    sinon.assert.notCalled(spyAbort);
   });
 
-  it('monitorRequests should abort the request', (  ) => {
+  it('monitorRequests should abort the request', (done) => {
     let request = function () {
       return {
         resourceType: function () {
           return 'image';
         },
-        abort: sinon.spy,
-        continue: sinon.spy
+        abort: function () {
+          console.log('abort Called');
+        },
+        continue: function () {
+          console.log('continue Called');
+        }
       };
     };
-    page.on('request', request);
-    process.nextTick(function() {
+    let spyAbort = sinon.spy(request(), 'abort');
+    let spyContinue = sinon.spy(request(), 'continue');
+    process.nextTick(function () {
       page.emit('request', request());
     });
     MonitorRequestHelper.monitorRequests(page, true);
-    sinon.assert.calledOnce(request().abort());
+    sinon.assert.calledOnce(spyAbort);
+    sinon.assert.notCalled(spyContinue);
+    spyAbort.restore();
+    spyContinue.restore();
+    done();
   });
 
-  it('monitorRequests should continue the request', () => {
+  it('monitorRequests should continue the request', (done) => {
     let request = function () {
       return {
         resourceType: function () {
           return 'javascript';
         },
-        abort: sinon.spy,
-        continue: sinon.spy
+        abort: function () {
+          console.log('abort Called');
+        },
+        continue: function () {
+          console.log('continue Called');
+        }
       };
     };
-    page.on('request', request);
-    page.emit('request', request);
+    let spyContinue = sinon.spy(request(), 'continue');
+    let spyAbort = sinon.spy(request(), 'abort');
+    process.nextTick(function () {
+      page.emit('request', request());
+    });
     MonitorRequestHelper.monitorRequests(page, true);
-    sinon.assert.calledOnce(request().continue());
+    sinon.assert.calledOnce(spyContinue);
+    sinon.assert.calledOnce(spyAbort);
+    done();
   });
 });
