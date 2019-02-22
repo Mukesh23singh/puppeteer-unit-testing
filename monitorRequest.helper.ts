@@ -6,14 +6,15 @@ export class MonitorRequestHelper {
     * @param page puppeteer.Page
     * @return Promise<LoginResult>
     */
-   public static monitorRequests(page: Page, on = false) {
+   public static async monitorRequests(page: Page, on = false) {
     if(on) {
+      await page.setRequestInterception(true);
       return page.on('request', req => {
         if (['image', 'font', 'stylesheet'].includes(req.resourceType())) {
           // Abort requests for images, fonts & stylesheets to increase page load speed.
-          req.abort();
+          return req.abort();
         } else {
-          req.continue();
+          return req.continue();
         }
       });
     } else {

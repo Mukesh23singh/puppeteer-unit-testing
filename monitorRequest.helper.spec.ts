@@ -1,93 +1,91 @@
-import * as sinon from 'sinon';
 import { expect } from 'chai';
-const proc = require('child_process');
+import 'mocha';
+import * as sinon from 'sinon';
 
 import { MonitorRequestHelper } from './monitorRequest.helper';
-const EventEmitter = require('events').EventEmitter;
-class Page extends EventEmitter {
-}
 
 describe('MonitorRequestHelper', () => {
-  let page: Page;
-  let exec;
-  beforeEach(() => {
-    page = new Page;
-    exec = sinon.stub(proc, 'exec');
-  });
+  it('monitorRequests should not called', (done) => {
+    // Arrange
+    const fakePage = {
+      on(type, cb) {
+        this[type] = cb;
+      },
 
-  afterEach(function () {
-    exec.restore();
-  });
-
-  it('monitorRequests should not called', () => {
-    let request = function () {
-      return {
-        resourceType: function () {
-          return 'image';
-        },
-        abort: function () {
-          console.log('abort Called');
-        },
-        continue: function () {
-          console.log('abort Called');
-        }
-      };
+      setRequestInterception() {
+        console.log('setRequestInterception Called');
+      }
     };
-    page.on('request', request);
-    let spyAbort = sinon.spy(request(), 'abort');
-    MonitorRequestHelper.monitorRequests(page);
-    sinon.assert.notCalled(spyAbort);
+    const fakeRequest = {
+      abort: sinon.spy(),
+      continue: sinon.spy(),
+      resourceType() { return 'image'; }
+    };
+    MonitorRequestHelper.monitorRequests(fakePage);
+
+    // Act
+    // trigger fake request
+    fakePage['on']('request', fakeRequest);
+
+    // Assert
+    expect(fakeRequest.abort.notCalled);
+    expect(fakeRequest.continue.notCalled);
+    done();
   });
 
   it('monitorRequests should abort the request', (done) => {
-    let request = function () {
-      return {
-        resourceType: function () {
-          return 'image';
-        },
-        abort: function () {
-          console.log('abort Called');
-        },
-        continue: function () {
-          console.log('continue Called');
-        }
-      };
+    // Arrange
+    const fakePage = {
+      on(type, cb) {
+        this[type] = cb;
+      },
+
+      setRequestInterception() {
+        console.log('setRequestInterception Called');
+      }
     };
-    let spyAbort = sinon.spy(request(), 'abort');
-    let spyContinue = sinon.spy(request(), 'continue');
-    process.nextTick(function () {
-      page.emit('request', request());
-    });
-    MonitorRequestHelper.monitorRequests(page, true);
-    sinon.assert.calledOnce(spyAbort);
-    sinon.assert.notCalled(spyContinue);
-    spyAbort.restore();
-    spyContinue.restore();
+    const fakeRequest = {
+      abort: sinon.spy(),
+      continue: sinon.spy(),
+      resourceType() { return 'image'; }
+    };
+    MonitorRequestHelper.monitorRequests(fakePage, true);
+
+    // Act
+    // trigger fake request
+    fakePage['on']('request', fakeRequest);
+
+    // Assert
+    expect(fakeRequest.abort.called);
+    expect(fakeRequest.continue.notCalled);
     done();
   });
 
   it('monitorRequests should continue the request', (done) => {
-    let request = function () {
-      return {
-        resourceType: function () {
-          return 'javascript';
-        },
-        abort: function () {
-          console.log('abort Called');
-        },
-        continue: function () {
-          console.log('continue Called');
-        }
-      };
+    // Arrange
+    const fakePage = {
+      on(type, cb) {
+        this[type] = cb;
+      },
+
+      setRequestInterception() {
+        console.log('setRequestInterception Called');
+      }
     };
-    let spyContinue = sinon.spy(request(), 'continue');
-    let spyAbort = sinon.spy(request(), 'abort');
-    process.nextTick(function () {
-      page.emit('request', request());
-    });
-    MonitorRequestHelper.monitorRequests(page, true);
-    sinon.assert.calledOnce(spyContinue);
-    sinon.assert.calledOnce(spyAbort);
+    const fakeRequest = {
+      continue: sinon.spy(),
+      abort: sinon.spy(),
+      resourceType() { return 'image'; }
+    };
+    MonitorRequestHelper.monitorRequests(fakePage, true);
+
+    // Act
+    // trigger fake request
+    fakePage['on']('request', fakeRequest);
+
+    // Assert
+    expect(fakeRequest.continue.calledOnce);
+    expect(fakeRequest.abort.notCalled);
     done();
   });
 });
